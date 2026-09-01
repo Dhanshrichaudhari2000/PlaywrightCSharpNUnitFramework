@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <Playwright>
+    <BrowserName>chromium</BrowserName>
+    <!--BrowserName>firefox</BrowserName-->
+
+    <LaunchOptions>
+      <Headless>false</Headless>
+      <SlowMo>100</SlowMo>
+    </LaunchOptions>
+  </Playwright>
+
+   <LoggerRunSettings>
+    <Loggers>
+      <Logger friendlyName="html" enabled="True">
+        <Configuration>
+          <LogFileName>test-report.html</LogFileName>
+        </Configuration>
+      </Logger>
+    </Loggers>
+  </LoggerRunSettings>
+</RunSettings>

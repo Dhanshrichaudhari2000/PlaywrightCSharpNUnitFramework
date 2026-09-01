@@ -1,0 +1,25 @@
+using PlaywrightNUnitFramework.Pages;
+
+namespace PlaywrightNUnitFramework.Tests;
+
+[TestFixture]
+public class CheckoutWorkflowTests : BaseTest
+{
+
+    [Test]
+    public async Task EmptyCartShouldContainZeroItems()
+    {
+        var loginPage = new PlaywrightHomePage(Page);
+        var productsPage = new InventoryPage(Page);
+
+        await loginPage.LoginAsync(
+            "standard_user",
+            "secret_sauce");
+
+        await productsPage.OpenCartAsync();
+
+        var itemCount = await productsPage.GetItemCountAsync();
+
+        Assert.That(itemCount, Is.EqualTo(0));
+    }
+}

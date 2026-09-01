@@ -1,0 +1,54 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: PlaywrightNUnitFramework.Tests
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+        working-directory: PlaywrightNUnitFramework.Tests
+
+      - name: Install Playwright browsers
+        run: pwsh bin/Release/net8.0/playwright.ps1 install --with-deps ${{ matrix.browser }}
+        working-directory: PlaywrightNUnitFramework.Tests
+
+      - name: Run tests
+        continue-on-error: true
+        run: >
+          dotnet test --no-build --configuration Release
+          --settings .runsettings
+          --results-directory TestResults
+          -- TestRunParameters.Parameter(name="BrowserName", value="${{ matrix.browser }}")
+        working-directory: PlaywrightNUnitFramework.Tests
+
+      - name: Upload test report + screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.browser }}
+          path: PlaywrightNUnitFramework.Tests/TestResults/**
+          retention-days: 14
